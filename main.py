@@ -44,14 +44,15 @@ failed_icon = '[\033[1;31mX\033[0m]'
 Prosedur untuk menyimpan data
 '''
 def saveData():
-    json.dump(app_data, open('data.json', 'w'), indent=4)
+    with open('data.json', 'w', encoding='utf-8') as f:
+        json.dump(app_data, f, indent=4)
 
 '''
 Fungsi tanpa parameter untuk login
 '''
 def login():
     global is_admin, penerima, session
-    print('Selamat datang di aplikasi Sistem Pencatatan Rakyat Kurang Mampu dan Pembagian Sembako')
+    print('Selamat datang di aplikasi Sistem Pencatatan Usaha Penggunaan Lahan')
     username = input('Masukkan username Anda : ')
     password = input('Masukkan password Anda : ')
     if username == 'admin':
@@ -83,7 +84,7 @@ Prosedur adminTambahPenerima() dengan 1 global variable dan 4 local variables
 '''
 def adminTambahPenerima():
     global penerima
-    print('=== Tambah Penerima ==')
+    print('=== Tambah Pemohon / Pengelola Lahan ===')
     nama = input('Masukkan nama : ')
     nik = input('Masukkan nik : ')
     if not validasiAngka(nik):
@@ -92,14 +93,14 @@ def adminTambahPenerima():
     password = input('Masukkan password : ')
     penerima[nik] = {'nik': nik, 'nama': nama, 'alamat': alamat, 'password': password}
     saveData()
-    print('Penerima berhasil dibuat')
+    print('Data pemohon berhasil dibuat')
     
 '''
 Prosedur adminLihatPenerima() menggunakan PrettyTable
 '''
 def adminLihatPenerima():
     global penerima
-    print('=== Lihat Semua Penerima ==')
+    print('=== Lihat Semua Pemohon Lahan ===')
     
     table = PrettyTable()
     table.field_names = ["No", "NIK", "Nama", "Alamat"]
@@ -116,47 +117,52 @@ Prosedur adminUbahStatus() menggunakan PrettyTable
 '''
 def adminUbahStatus():
     global penerima, pengajuan, blacklist
-    print('=== Ubah Status Pengajuan ==')
-    print('Pilih penerima yang akan diubah statusnya')
+    print('=== Ubah Status Pengajuan Penggunaan Lahan ===')
+    print('Pilih pengajuan yang akan diubah statusnya')
     
     table = PrettyTable()
-    table.field_names = ["No", "NIK", "Nama", "Alamat", "Status", "Deskripsi"]
+    table.field_names = ["No", "NIK", "Nama", "Alamat", "Status", "Mau Dipakai Apa", "Cara Pakai"]
     
     pengajuan_menu = []
     for i in penerima.values():
-        if pengajuan.get(i['nik']):
-            if pengajuan[i['nik']]['status'] == 'menunggu persetujuan':
-                pengajuan_menu.append({
-                    'nik': i['nik'], 
-                    'nama': i['nama'], 
-                    'alamat': i['alamat'], 
-                    'status': pengajuan[i['nik']]['status'], 
-                    'desc': pengajuan[i['nik']]['desc']
-                })
-                table.add_row([
-                    len(pengajuan_menu), 
-                    i['nik'], 
-                    i['nama'], 
-                    i['alamat'], 
-                    pengajuan[i['nik']]['status'], 
-                    pengajuan[i['nik']]['desc']
-                ])
+        data_pengajuan = pengajuan.get(i['nik'])
+        if data_pengajuan and data_pengajuan.get('status') == 'menunggu persetujuan':
+            mau_dipakai_apa = data_pengajuan.get('mau_dipakai_apa', data_pengajuan.get('desc', '-'))
+            cara_pakai = data_pengajuan.get('cara_pakai', '-')
+            pengajuan_menu.append({
+                'nik': i['nik'], 
+                'nama': i['nama'], 
+                'alamat': i['alamat'], 
+                'status': data_pengajuan['status'], 
+                'mau_dipakai_apa': mau_dipakai_apa,
+                'cara_pakai': cara_pakai
+            })
+            table.add_row([
+                len(pengajuan_menu), 
+                i['nik'], 
+                i['nama'], 
+                i['alamat'], 
+                data_pengajuan['status'], 
+                mau_dipakai_apa,
+                cara_pakai
+            ])
                 
     if not pengajuan_menu:
         print("Tidak ada pengajuan yang menunggu persetujuan.")
         return
 
     print(table)
-    selected = pengajuan_menu[int(input('Pilih calon penerima yang akan disetujui : '))-1]
+    selected = pengajuan_menu[int(input('Pilih nomor pengajuan yang akan diproses : '))-1]
     
     os.system('clear')
     
-    print('=== Informasi Penerima ==')
+    print('=== Informasi Pengajuan Lahan ===')
     print(f'NIK                  : {selected["nik"]}')
     print(f'Nama                 : {selected["nama"]}')
     print(f'Alamat               : {selected["alamat"]}')
     print(f'Status pengajuan     : {selected["status"]}')
-    print(f'Alasan pengajuan     : \n{selected["desc"]}')
+    print(f'Mau dipakai apa      : {selected["mau_dipakai_apa"]}')
+    print(f'Cara pakai lahan      : {selected["cara_pakai"]}')
     
     print('\n=== Menu ===')
     print('[1] Setujui')
@@ -169,17 +175,17 @@ def adminUbahStatus():
     if select_menu == 1:
         pengajuan[selected['nik']]['status'] = 'disetujui'
         saveData()
-        print('Pengajuan berhasil disetujui')
+        print('Pengajuan penggunaan lahan berhasil disetujui')
     elif select_menu == 2:
         pengajuan[selected['nik']]['status'] = 'ditolak'
         saveData()
-        print('Pengajuan berhasil ditolak')
+        print('Pengajuan penggunaan lahan berhasil ditolak')
     elif select_menu == 3:
         desc = input('Masukkan alasan pemblokiran : ')
         pengajuan[selected['nik']]['status'] = 'ditolak'
-        blacklist[selected['nik']] = { 'desc': desc}
+        blacklist[selected['nik']] = {'desc': desc}
         saveData()
-        print('Penerima berhasil diblokir')
+        print('Pemohon berhasil diblokir')
     else:
         print('Dibatalkan')
 
@@ -188,7 +194,7 @@ Fungsi tanpa parameter getNewData() menggunakan PrettyTable
 '''
 def getNewData():
     global penerima
-    print('=== Ubah Penerima ==')
+    print('=== Ubah Data Pemohon ===')
     
     table = PrettyTable()
     table.field_names = ["No", "NIK", "Nama", "Alamat"]
@@ -199,7 +205,7 @@ def getNewData():
         j += 1
         
     print(table)
-    index = int(input('Pilih penerima : '))-1
+    index = int(input('Pilih pemohon : '))-1
     nama = input('Masukkan nama : ')
     alamat = input('Masukkan alamat : ')
     
@@ -214,14 +220,14 @@ def adminUbahPenerima():
     keys = list(penerima.keys())
     penerima[keys[index]] = {'nik': keys[index], 'nama': nama, 'alamat': alamat, 'password': penerima[keys[index]]['password']}
     saveData()
-    print('Data penerima berhasil diubah')
+    print('Data pemohon berhasil diubah')
 
 '''
 Prosedur adminHapusPenerima() menggunakan PrettyTable
 '''
 def adminHapusPenerima():
     global penerima, blacklist, pengajuan
-    print('=== Hapus Penerima ==')
+    print('=== Hapus Pemohon ===')
     
     table = PrettyTable()
     table.field_names = ["No", "NIK", "Nama", "Alamat"]
@@ -232,7 +238,7 @@ def adminHapusPenerima():
         j += 1
         
     print(table)
-    index = int(input('Pilih penerima yang akan dihapus : '))-1
+    index = int(input('Pilih pemohon yang akan dihapus : '))-1
     deleted = penerima.pop(list(penerima.keys())[index])
     if blacklist.get(deleted['nik']):
         blacklist.pop(deleted['nik'])
@@ -247,18 +253,24 @@ Prosedur userBuatPengajuan() dengan 2 global variables dan beberapa local variab
 def userBuatPengajuan():
     global blacklist, pengajuan
     if blacklist.get(session['nik']):
-        print('Akun Anda terblokir atau kena banned, silakan datangi kantor program sembako secara offline untuk verifikasi dan klarifikasi lebih lanjut.')
+        print('Akun Anda terblokir atau kena banned, silakan datangi kantor pengelolaan lahan secara offline untuk verifikasi dan klarifikasi lebih lanjut.')
         return
     
     if pengajuan.get(session['nik']):
         if pengajuan.get(session['nik'])['status'] == 'menunggu persetujuan':
-            print('Anda telah mengirim pengajuan sembako dan petugas akan memverifikasi lebih lanjut\ndalam waktu beberapa minggu sampai beberapa bulan sesuai regulasi dan birokrasi\nmasing-masing wilayah regional.')
+            print('Anda telah mengirim pengajuan penggunaan lahan dan petugas akan memverifikasi lebih lanjut\ndalam waktu beberapa minggu sampai beberapa bulan sesuai regulasi dan birokrasi\nmasing-masing wilayah regional.')
             return
     
-    desc = input('Masukkan alasan pengajuan : ')
-    pengajuan[session['nik']] = {'desc': desc, 'status': 'menunggu persetujuan'}
+    print('=== Form Pengajuan Penggunaan Lahan ===')
+    mau_dipakai_apa = input('Lahan mau dipakai untuk usaha apa? : ')
+    cara_pakai = input('Bagaimana cara pakai / metode pengelolaan lahannya? : ')
+    pengajuan[session['nik']] = {
+        'mau_dipakai_apa': mau_dipakai_apa,
+        'cara_pakai': cara_pakai,
+        'status': 'menunggu persetujuan'
+    }
     saveData()
-    print('Pengajuan berhasil dibuat.')
+    print('Pengajuan penggunaan lahan berhasil dibuat.')
     
     
 '''
@@ -266,26 +278,30 @@ Prosedur userLihatStatus() dengan 2 global variables dan beberapa local variable
 '''
 def userLihatStatus():
     global pengajuan, blacklist
-    if not pengajuan.get(session['nik']):
-        print('Anda belum membuat pengajuan.')
+    data_pengajuan = pengajuan.get(session['nik'])
+    if not data_pengajuan:
+        print('Anda belum membuat pengajuan penggunaan lahan.')
         return
     
     kena_banned = blacklist.get(session['nik'])
+    mau_dipakai_apa = data_pengajuan.get('mau_dipakai_apa', data_pengajuan.get('desc', '-'))
+    cara_pakai = data_pengajuan.get('cara_pakai', '-')
     
-    print('=== STATUS PENGAJUAN ===')
+    print('=== STATUS PENGAJUAN PENGGUNAAN LAHAN ===')
     print('Proses verifikasi mungkin memakan waktu beberapa minggu sampai\nbeberapa bulan bergantung pada regulasi dan birokrasi masing-masing wilayah regional.')
     print('[!] Cek secara berkala status pengajuan di aplikasi ini.\n')
-    print(f'Status pengajuan : {pengajuan[session["nik"]]["status"]}')
-    print(f'Deskripsi pengajuan \n{pengajuan[session["nik"]]["desc"]}\n')
+    print(f'Status pengajuan : {data_pengajuan["status"]}')
+    print(f'Mau dipakai apa  : {mau_dipakai_apa}')
+    print(f'Cara pakai lahan  : {cara_pakai}\n')
     
-    if pengajuan[session['nik']]['status'] == 'disetujui':
-        print('Selamat, Anda telah terverifikasi sebagai penerima, Anda berhak mendapatkan sembako.\n')
+    if data_pengajuan['status'] == 'disetujui':
+        print('Selamat, pengajuan usaha penggunaan lahan Anda telah disetujui dan terverifikasi.\n')
         
-    if pengajuan[session['nik']]['status'] == 'ditolak' and kena_banned:
-        print('Akun Anda terkena banned, Anda tidak dapat membuat\nulang pengajuan dan Anda tidak berhak mendapatkan sembako.\nSilakan datangi kantor pembagian sembako untuk verifikasi data dan klarifikasi\nlalu Anda membuat kembali pengajuan melalui aplikasi ini dan melewati prosedur birokasi sesuai protokol')
+    if data_pengajuan['status'] == 'ditolak' and kena_banned:
+        print('Akun Anda terkena banned, Anda tidak dapat membuat\nulang pengajuan penggunaan lahan.\nSilakan datangi kantor pengelolaan lahan untuk verifikasi data dan klarifikasi\nlalu Anda membuat kembali pengajuan melalui aplikasi ini dan melewati prosedur birokrasi sesuai protokol')
     
-    if pengajuan[session['nik']]['status'] == 'ditolak' and not kena_banned:
-        print('Pengajuan ditolak, Anda dapat membuat ulang pengajuan dan\nkembali melewati prosedur birokasi sesuai protokol')
+    if data_pengajuan['status'] == 'ditolak' and not kena_banned:
+        print('Pengajuan ditolak, Anda dapat membuat ulang pengajuan dan\nkembali melewati prosedur birokrasi sesuai protokol')
     
     if kena_banned:
         print(f'Status akun : TIDAK SEHAT / KENA BANNED {failed_icon}')
@@ -298,12 +314,12 @@ def userLihatStatus():
 Prosedur menu admin
 '''
 def adminMenu():
-    print('=== Admin Menu ==')
-    print('[1] Tambah penerima      | CREATE')
-    print('[2] Lihat penerima       | READ')
+    print('=== Admin Menu ===')
+    print('[1] Tambah pemohon       | CREATE')
+    print('[2] Lihat pemohon        | READ')
     print('[3] Setujui pengajuan    | UPDATE')
-    print('[4] Ubah data penerima   | UPDATE')
-    print('[5] Hapus penerima       | DELETE')
+    print('[4] Ubah data pemohon    | UPDATE')
+    print('[5] Hapus pemohon        | DELETE')
     print('[6] Keluar')
     menu = input('Pilih menu : ')
     os.system('clear')
@@ -330,7 +346,7 @@ Prosedur menu pengguna biasa
 '''
 def userMenu():
     print('=== User Menu ===')
-    print('PERHATIAN: Proses verifikasi mungkin memakan waktu beberapa minggu sampai\nbeberapa bulan bergantung pada regulasi dan birokrasi masing-masing wilayah regional.\nDatangi kantor program sembako secara offline untuk verifikasi dan klarifikasi lebih lanjut jika akun Anda terblokir.')
+    print('PERHATIAN: Proses verifikasi mungkin memakan waktu beberapa minggu sampai\nbeberapa bulan bergantung pada regulasi dan birokrasi masing-masing wilayah regional.\nDatangi kantor pengelolaan lahan secara offline untuk verifikasi dan klarifikasi lebih lanjut jika akun Anda terblokir.')
     print('[1] Buat pengajuan   | CREATE')
     print('[2] Lihat status     | READ')
     print('[3] Keluar')
@@ -354,8 +370,8 @@ Prosedur menu
 def mainMenu():
     while (1):
         os.system('clear')
-        print('Sistem Pencatatan Rakyat Kurang Mampu dan Pembagian Sembako')
-        print('"Kami berkomitmen untuk membagikan karbohidrat secara gratis"')
+        print('Sistem Pencatatan Usaha Penggunaan Lahan')
+        print('"Pencatatan tertib, pemanfaatan lahan tepat guna dan berkelanjutan"')
         if is_admin:
             adminMenu()
         else:
