@@ -1,6 +1,6 @@
 '''
-Nama    : Gabriel Ado Ramos Tukan
-NIM     : 2609106038
+Nama : Gabriel Ado Ramos Tukan
+NIM : 2609106038
 
 Lihat data.json untuk mendapatkat informasi login yang lebih lengkap atau lihat inforasi login di bawah ini
 
@@ -8,20 +8,48 @@ Login admin: {"username": "admin", "password": "Admin#1234"}
 
 Login penerima:
 [
-  {"username": "067", "password": "asepasep123"},
-  {"username": "068", "password": "testing67"},
-  {"username": "069", "password": "barbershop66"},
-  {"username": "070", "password": "gatau"},
-  {"username": "306", "password": "hydrant"}
+{"username": "067", "password": "asepasep123"},
+{"username": "068", "password": "testing67"},
+{"username": "069", "password": "barbershop66"},
+{"username": "070", "password": "gatau"},
+{"username": "306", "password": "hydrant"}
 ]
 '''
 import os
 import json
 from prettytable import PrettyTable
 from utils import validasiMenu, validasiAngka
+import requests
 
-# 6 variabel global digunakan
-app_data = json.load(open('data.json', 'r', encoding='utf-8'))
+bin_url = "https://api.npoint.io/6294537bbf4ad236df4e"
+
+def loadData():
+    """Memuat data dari npoint.io ke app_data."""
+    print("Memuat data dari npoint.io...")
+    try:
+        response = requests.get(bin_url, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        print("Data berhasil dimuat.")
+        return data
+    except requests.exceptions.RequestException as e:
+        print(f"Gagal memuat data: {e}")
+        raise
+
+
+def saveData():
+    """Prosedur untuk menyimpan data ke npoint.io."""
+    print("Menyimpan data ke npoint.io...")
+    try:
+        response = requests.put(bin_url, json=app_data, timeout=10)
+        response.raise_for_status()
+        print("Data berhasil disimpan.")
+    except requests.exceptions.RequestException as e:
+        print(f"Gagal menyimpan data: {e}")
+        raise
+
+
+app_data = loadData()
 
 penerima = app_data['tables']['penerima']
 pengajuan = app_data['tables']['pengajuan']
