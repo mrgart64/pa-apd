@@ -98,7 +98,7 @@ clearScreen()
 Fungsi tanpa parameter untuk login
 '''
 def login():
-    global is_admin, penerima, session
+    global is_admin, is_login, penerima, session
     print('Selamat datang di aplikasi Sistem Pencatatan Usaha Penggunaan Lahan')
     username = input('Masukkan username Anda : ')
     password = input('Masukkan password Anda : ')
@@ -117,6 +117,7 @@ def login():
                 if password == i['password']:
                     print(f'{success_icon} Berhasil login sebagai {i["nama"]}')
                     session = i
+                    is_admin = False
                     is_login = True
                     return True
                 else:
@@ -148,16 +149,21 @@ def adminTambahPenerima():
 '''
 Prosedur adminLihatPenerima() menggunakan PrettyTable
 '''
+'''
+Prosedur adminLihatPenerima() menggunakan PrettyTable
+'''
 def adminLihatPenerima():
-    global penerima
+    global penerima, blacklist
     print('=== Lihat Semua Pemohon Lahan ===')
     
     table = PrettyTable()
-    table.field_names = ["No", "NIP", "Nama", "Alamat"]
+    table.field_names = ["No", "NIP", "Nama", "Alamat", "Status Akun"]
     
     j = 1
     for i in penerima.values():
-        table.add_row([j, i['nip'], i['nama'], i['alamat']])
+        nip = i['nip']
+        status_akun = "diblokir" if (nip in blacklist and blacklist[nip]) else "sehat"
+        table.add_row([j, nip, i['nama'], i['alamat'], status_akun])
         j += 1
         
     print(table)
@@ -227,12 +233,15 @@ def adminUbahStatus():
         saveData()
         print('Pengajuan penggunaan lahan berhasil disetujui')
     elif select_menu == 2:
+        desc = input('Masukkan alasan pemblokiran : ')
         pengajuan[selected['nip']]['status'] = 'ditolak'
+        pengajuan[selected['nip']]['alasan'] = desc
         saveData()
         print('Pengajuan penggunaan lahan berhasil ditolak')
     elif select_menu == 3:
         desc = input('Masukkan alasan pemblokiran : ')
         pengajuan[selected['nip']]['status'] = 'ditolak'
+        pengajuan[selected['nip']]['alasan'] = desc
         blacklist[selected['nip']] = {'desc': desc}
         saveData()
         print('Pemohon berhasil diblokir')
@@ -422,6 +431,10 @@ def userLihatStatus():
         print(f'Status akun : TIDAK SEHAT / KENA BANNED {failed_icon}')
         print(f'{warning_icon} Akun Anda terkena banned')
         print(f'Alasan pemblokiran: \n{blacklist[session["nip"]]["desc"]}')
+    elif data_pengajuan['status'] == 'ditolak' and not kena_banned:
+        print(f'Status akun : SEHAT {success_icon}')
+        print(f'{warning_icon} Pengajuan ditolak, masih dapat membuat pengajuan lagi')
+        print(f'Alasan: \n{pengajuan[session["nip"]].get("alasan")}')
     else:
         print(f'Status akun : SEHAT {success_icon}')
 
@@ -429,6 +442,7 @@ def userLihatStatus():
 Prosedur menu admin
 '''
 def adminMenu():
+    global is_login
     print('=== Admin Menu ===')
     print('[1] Tambah pemohon       | CREATE')
     print('[2] Lihat pemohon        | READ')
@@ -457,12 +471,13 @@ def adminMenu():
     elif menu == 6:
         adminLihatStatistik()
     elif menu == 7:
-        exit()
+        is_login = False
 
 '''
 Prosedur menu pengguna biasa
 '''
 def userMenu():
+    global is_login
     reloadData()
     print('=== User Menu ===')
     print('PERHATIAN: Proses verifikasi mungkin memakan waktu beberapa minggu sampai\nbeberapa bulan bergantung pada regulasi dan birokrasi wilayah Kalimantan Timur.\nDatangi kantor pengelolaan lahan secara offline untuk verifikasi dan klarifikasi lebih lanjut jika akun Anda terblokir.')
@@ -481,13 +496,14 @@ def userMenu():
     elif menu == 2:
         userLihatStatus()
     elif menu == 3:
-        exit()
+        is_login = False
 
 '''
 Prosedur menu
 '''
 def mainMenu():
-    while (1):
+    global is_login
+    while is_login:
         clearScreen()
         print('Sistem Pencatatan Usaha Penggunaan Lahan')
         print('"Pencatatan tertib, pemanfaatan lahan tepat guna dan berkelanjutan"')
@@ -496,13 +512,15 @@ def mainMenu():
         else:
             userMenu()
         input('\nTekan enter untuk melanjutkan...\n')
+      
 
 
 def main():
     while True:
-        if login():
-            break
-        
-    mainMenu()
+        while True:
+            if login():
+                break
+            
+        mainMenu()
     
 main()
