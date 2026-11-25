@@ -66,7 +66,7 @@ def login():
             return False
     else:
         for i in penerima.values():
-            if username == i['nik']:
+            if username == i['nip']:
                 if password == i['password']:
                     print(f'{success_icon} Berhasil login sebagai {i["nama"]}')
                     session = i
@@ -86,12 +86,12 @@ def adminTambahPenerima():
     global penerima
     print('=== Tambah Pemohon / Pengelola Lahan ===')
     nama = input('Masukkan nama : ')
-    nik = input('Masukkan nik : ')
-    if not validasiAngka(nik):
+    nip = input('Masukkan nip : ')
+    if not validasiAngka(nip):
         return
     alamat = input('Masukkan alamat : ')
     password = input('Masukkan password : ')
-    penerima[nik] = {'nik': nik, 'nama': nama, 'alamat': alamat, 'password': password}
+    penerima[nip] = {'nip': nip, 'nama': nama, 'alamat': alamat, 'password': password}
     saveData()
     print('Data pemohon berhasil dibuat')
     
@@ -103,11 +103,11 @@ def adminLihatPenerima():
     print('=== Lihat Semua Pemohon Lahan ===')
     
     table = PrettyTable()
-    table.field_names = ["No", "NIK", "Nama", "Alamat"]
+    table.field_names = ["No", "NIP", "Nama", "Alamat"]
     
     j = 1
     for i in penerima.values():
-        table.add_row([j, i['nik'], i['nama'], i['alamat']])
+        table.add_row([j, i['NIP'], i['nama'], i['alamat']])
         j += 1
         
     print(table)
@@ -121,16 +121,16 @@ def adminUbahStatus():
     print('Pilih pengajuan yang akan diubah statusnya')
     
     table = PrettyTable()
-    table.field_names = ["No", "NIK", "Nama", "Alamat", "Status", "Mau Dipakai Apa", "Cara Pakai"]
+    table.field_names = ["No", "NIP", "Nama", "Alamat", "Status", "Mau Dipakai Apa", "Cara Pakai"]
     
     pengajuan_menu = []
     for i in penerima.values():
-        data_pengajuan = pengajuan.get(i['nik'])
+        data_pengajuan = pengajuan.get(i['nip'])
         if data_pengajuan and data_pengajuan.get('status') == 'menunggu persetujuan':
             mau_dipakai_apa = data_pengajuan.get('mau_dipakai_apa', data_pengajuan.get('desc', '-'))
             cara_pakai = data_pengajuan.get('cara_pakai', '-')
             pengajuan_menu.append({
-                'nik': i['nik'], 
+                'nip': i['nip'], 
                 'nama': i['nama'], 
                 'alamat': i['alamat'], 
                 'status': data_pengajuan['status'], 
@@ -139,7 +139,7 @@ def adminUbahStatus():
             })
             table.add_row([
                 len(pengajuan_menu), 
-                i['nik'], 
+                i['nip'], 
                 i['nama'], 
                 i['alamat'], 
                 data_pengajuan['status'], 
@@ -157,7 +157,7 @@ def adminUbahStatus():
     os.system('clear')
     
     print('=== Informasi Pengajuan Lahan ===')
-    print(f'NIK                  : {selected["nik"]}')
+    print(f'NIP                  : {selected["nip"]}')
     print(f'Nama                 : {selected["nama"]}')
     print(f'Alamat               : {selected["alamat"]}')
     print(f'Status pengajuan     : {selected["status"]}')
@@ -173,17 +173,17 @@ def adminUbahStatus():
     select_menu = int(input('Pilih menu : '))
     
     if select_menu == 1:
-        pengajuan[selected['nik']]['status'] = 'disetujui'
+        pengajuan[selected['nip']]['status'] = 'disetujui'
         saveData()
         print('Pengajuan penggunaan lahan berhasil disetujui')
     elif select_menu == 2:
-        pengajuan[selected['nik']]['status'] = 'ditolak'
+        pengajuan[selected['nip']]['status'] = 'ditolak'
         saveData()
         print('Pengajuan penggunaan lahan berhasil ditolak')
     elif select_menu == 3:
         desc = input('Masukkan alasan pemblokiran : ')
-        pengajuan[selected['nik']]['status'] = 'ditolak'
-        blacklist[selected['nik']] = {'desc': desc}
+        pengajuan[selected['nip']]['status'] = 'ditolak'
+        blacklist[selected['nip']] = {'desc': desc}
         saveData()
         print('Pemohon berhasil diblokir')
     else:
@@ -197,11 +197,11 @@ def getNewData():
     print('=== Ubah Data Pemohon ===')
     
     table = PrettyTable()
-    table.field_names = ["No", "NIK", "Nama", "Alamat"]
+    table.field_names = ["No", "NIP", "Nama", "Alamat"]
     
     j = 1
     for i in penerima.values():
-        table.add_row([j, i['nik'], i['nama'], i['alamat']])
+        table.add_row([j, i['nip'], i['nama'], i['alamat']])
         j += 1
         
     print(table)
@@ -218,7 +218,7 @@ def adminUbahPenerima():
     global penerima
     (index, nama, alamat) = getNewData()
     keys = list(penerima.keys())
-    penerima[keys[index]] = {'nik': keys[index], 'nama': nama, 'alamat': alamat, 'password': penerima[keys[index]]['password']}
+    penerima[keys[index]] = {'nip': keys[index], 'nama': nama, 'alamat': alamat, 'password': penerima[keys[index]]['password']}
     saveData()
     print('Data pemohon berhasil diubah')
 
@@ -230,41 +230,41 @@ def adminHapusPenerima():
     print('=== Hapus Pemohon ===')
     
     table = PrettyTable()
-    table.field_names = ["No", "NIK", "Nama", "Alamat"]
+    table.field_names = ["No", "NIP", "Nama", "Alamat"]
     
     j = 1
     for i in penerima.values():
-        table.add_row([j, i['nik'], i['nama'], i['alamat']])
+        table.add_row([j, i['nip'], i['nama'], i['alamat']])
         j += 1
         
     print(table)
     index = int(input('Pilih pemohon yang akan dihapus : '))-1
     deleted = penerima.pop(list(penerima.keys())[index])
-    if blacklist.get(deleted['nik']):
-        blacklist.pop(deleted['nik'])
-    if pengajuan.get(deleted['nik']):
-        pengajuan.pop(deleted['nik'])
+    if blacklist.get(deleted['nip']):
+        blacklist.pop(deleted['nip'])
+    if pengajuan.get(deleted['nip']):
+        pengajuan.pop(deleted['nip'])
     saveData()
-    print(f'{deleted["nama"]} ({deleted["nik"]}) berhasil dihapus')
+    print(f'{deleted["nama"]} ({deleted["nip"]}) berhasil dihapus')
     
 '''
 Prosedur userBuatPengajuan() dengan 2 global variables dan beberapa local variables
 '''
 def userBuatPengajuan():
     global blacklist, pengajuan
-    if blacklist.get(session['nik']):
+    if blacklist.get(session['nip']):
         print('Akun Anda terblokir atau kena banned, silakan datangi kantor pengelolaan lahan secara offline untuk verifikasi dan klarifikasi lebih lanjut.')
         return
     
-    if pengajuan.get(session['nik']):
-        if pengajuan.get(session['nik'])['status'] == 'menunggu persetujuan':
+    if pengajuan.get(session['nip']):
+        if pengajuan.get(session['nip'])['status'] == 'menunggu persetujuan':
             print('Anda telah mengirim pengajuan penggunaan lahan dan petugas akan memverifikasi lebih lanjut\ndalam waktu beberapa minggu sampai beberapa bulan sesuai regulasi dan birokrasi\nmasing-masing wilayah regional.')
             return
     
     print('=== Form Pengajuan Penggunaan Lahan ===')
     mau_dipakai_apa = input('Lahan mau dipakai untuk usaha apa? : ')
     cara_pakai = input('Bagaimana cara pakai / metode pengelolaan lahannya? : ')
-    pengajuan[session['nik']] = {
+    pengajuan[session['nip']] = {
         'mau_dipakai_apa': mau_dipakai_apa,
         'cara_pakai': cara_pakai,
         'status': 'menunggu persetujuan'
@@ -278,12 +278,12 @@ Prosedur userLihatStatus() dengan 2 global variables dan beberapa local variable
 '''
 def userLihatStatus():
     global pengajuan, blacklist
-    data_pengajuan = pengajuan.get(session['nik'])
+    data_pengajuan = pengajuan.get(session['nip'])
     if not data_pengajuan:
         print('Anda belum membuat pengajuan penggunaan lahan.')
         return
     
-    kena_banned = blacklist.get(session['nik'])
+    kena_banned = blacklist.get(session['nip'])
     mau_dipakai_apa = data_pengajuan.get('mau_dipakai_apa', data_pengajuan.get('desc', '-'))
     cara_pakai = data_pengajuan.get('cara_pakai', '-')
     
@@ -306,7 +306,7 @@ def userLihatStatus():
     if kena_banned:
         print(f'Status akun : TIDAK SEHAT / KENA BANNED {failed_icon}')
         print(f'{warning_icon} Akun Anda terkena banned')
-        print(f'Alasan pemblokiran: \n{blacklist[session["nik"]]["desc"]}')
+        print(f'Alasan pemblokiran: \n{blacklist[session["nip"]]["desc"]}')
     else:
         print(f'Status akun : SEHAT {success_icon}')
 
