@@ -135,11 +135,14 @@ def adminTambahPenerima():
     nip = input('Masukkan nip : ')
     if not validasiAngka(nip):
         return
+    if nip in penerima:
+        print(f'{warning_icon} NIP {nip} sudah terdaftar ({penerima[nip]["nama"]}) dan tidak bisa dipakai.')
+        return
     alamat = input('Masukkan alamat : ')
     password = input('Masukkan password : ')
     penerima[nip] = {'nip': nip, 'nama': nama, 'alamat': alamat, 'password': password}
     saveData()
-    print('Data pemohon berhasil dibuat')
+    print(f'{success_icon} Data pemohon berhasil dibuat')
     
 '''
 Prosedur adminLihatPenerima() menggunakan PrettyTable
