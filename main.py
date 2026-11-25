@@ -21,6 +21,7 @@ import time
 from prettytable import PrettyTable
 from utils import validasiMenu, validasiAngka
 import requests
+import matplotlib.pyplot as plt
 
 bin_url = "https://satteliteworker.basis64.workers.dev/5t8eihgoto32gn6y"
 
@@ -295,6 +296,71 @@ def adminHapusPenerima():
         pengajuan.pop(deleted['nip'])
     saveData()
     print(f'{deleted["nama"]} ({deleted["nip"]}) berhasil dihapus')
+
+def adminLihatStatistik():
+    global pengajuan
+    reloadData()  # Ambil data terbaru dari server sebelum membuat chart
+    print('=== Statistik Pengajuan Penggunaan Lahan ===')
+
+    diterima = 0
+    ditolak = 0
+    pending = 0
+    daftar_pending = []
+
+    for nip, data in pengajuan.items():
+        if not isinstance(data, dict):
+            pending += 1
+            daftar_pending.append((nip, 'Belum ada detail status'))
+            continue
+
+        status = str(data.get('status', '')).strip().lower()
+
+        if status in ('disetujui', 'diterima'):
+            diterima += 1
+        elif status == 'ditolak':
+            ditolak += 1
+        else:
+            # Termasuk 'menunggu persetujuan', 'pending', kosong, atau belum direspon
+            pending += 1
+            label_status = status if status else 'belum direspon'
+            daftar_pending.append((nip, label_status))
+
+    print(f'Diterima : {diterima}')
+    print(f'Ditolak  : {ditolak}')
+    print(f'Pending  : {pending}')
+
+    if daftar_pending:
+        print('\nDaftar pengajuan masuk kategori Pending:')
+        for nip, st in daftar_pending:
+            nama_pemohon = penerima.get(nip, {}).get('nama', '-')
+            print(f'  - NIP {nip} ({nama_pemohon}) -> status: {st}')
+
+    kategori = ['Diterima', 'Ditolak', 'Pending']
+    jumlah = [diterima, ditolak, pending]
+    warna = ['green', 'red', 'gold']  # hijau, merah, kuning
+
+    plt.figure(figsize=(7, 5))
+    bars = plt.bar(kategori, jumlah, color=warna, edgecolor='black', width=0.55)
+
+    for bar in bars:
+        tinggi = bar.get_height()
+        plt.text(
+            bar.get_x() + bar.get_width() / 2,
+            tinggi + 0.15,
+            str(int(tinggi)),
+            ha='center',
+            va='bottom',
+            fontsize=10,
+            fontweight='bold'
+        )
+
+    plt.title('Statistik Status Pengajuan Penggunaan Lahan', fontsize=13, fontweight='bold')
+    plt.xlabel('Status Pengajuan', fontsize=11)
+    plt.ylabel('Jumlah Pengajuan', fontsize=11)
+    plt.ylim(0, max(jumlah + [1]) + 1)
+    plt.grid(axis='y', linestyle='--', alpha=0.5)
+    plt.tight_layout()
+    plt.show()
     
 '''
 Prosedur userBuatPengajuan() dengan 2 global variables dan beberapa local variables
@@ -363,21 +429,21 @@ def userLihatStatus():
 Prosedur menu admin
 '''
 def adminMenu():
-    reloadData()
     print('=== Admin Menu ===')
     print('[1] Tambah pemohon       | CREATE')
     print('[2] Lihat pemohon        | READ')
     print('[3] Setujui pengajuan    | UPDATE')
     print('[4] Ubah data pemohon    | UPDATE')
     print('[5] Hapus pemohon        | DELETE')
-    print('[6] Keluar')
+    print('[6] Lihat statistik      | CHART')
+    print('[7] Keluar')
     menu = input('Pilih menu : ')
     clearScreen()
-    if not validasiMenu(menu, 6):
+    if not validasiMenu(menu, 7):
         return
-    
+
     menu = int(menu)
-    
+
     if menu == 1:
         adminTambahPenerima()
     elif menu == 2:
@@ -389,6 +455,8 @@ def adminMenu():
     elif menu == 5:
         adminHapusPenerima()
     elif menu == 6:
+        adminLihatStatistik()
+    elif menu == 7:
         exit()
 
 '''
