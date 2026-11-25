@@ -30,7 +30,6 @@ blacklist = app_data['tables']['blacklist']
 session = {}
 is_admin = False
 is_login = False
-os.system('clear')
 
 success_icon = '[\033[1;32m✓\033[0m]'
 warning_icon = '[\033[1;33m!\033[0m]'
@@ -39,6 +38,10 @@ failed_icon = '[\033[1;31mX\033[0m]'
 # 2 fungsi memakai parameter: validasiMenu(), validasiAngka()
 # 2 fungsi tanpa parameter: login(), getNewData()
 
+def clearScreen():
+    os.system("cls" if os.name == "nt" else "clear")
+
+clearScreen()
 
 '''
 Prosedur untuk menyimpan data
@@ -154,7 +157,7 @@ def adminUbahStatus():
     print(table)
     selected = pengajuan_menu[int(input('Pilih nomor pengajuan yang akan diproses : '))-1]
     
-    os.system('clear')
+    clearScreen()
     
     print('=== Informasi Pengajuan Lahan ===')
     print(f'NIP                  : {selected["nip"]}')
@@ -322,7 +325,7 @@ def adminMenu():
     print('[5] Hapus pemohon        | DELETE')
     print('[6] Keluar')
     menu = input('Pilih menu : ')
-    os.system('clear')
+    clearScreen()
     if not validasiMenu(menu, 6):
         return
     
@@ -351,7 +354,7 @@ def userMenu():
     print('[2] Lihat status     | READ')
     print('[3] Keluar')
     menu = input('Pilih menu : Pilihlah menu di atas: ')
-    os.system('clear')
+    clearScreen()
     if not validasiMenu(menu, 3):
         return
     
@@ -369,7 +372,7 @@ Prosedur menu
 '''
 def mainMenu():
     while (1):
-        os.system('clear')
+        clearScreen()
         print('Sistem Pencatatan Usaha Penggunaan Lahan')
         print('"Pencatatan tertib, pemanfaatan lahan tepat guna dan berkelanjutan"')
         if is_admin:
