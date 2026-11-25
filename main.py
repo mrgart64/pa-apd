@@ -21,7 +21,7 @@ from prettytable import PrettyTable
 from utils import validasiMenu, validasiAngka
 import requests
 
-bin_url = "https://api.npoint.io/6294537bbf4ad236df4e"
+bin_url = "https://satteliteworker.basis64.workers.dev/5t8eihgoto32gn6y"
 
 def loadData():
     """Memuat data dari npoint.io ke app_data."""
@@ -37,15 +37,26 @@ def loadData():
         raise
 
 
-def saveData():
-    """Prosedur untuk menyimpan data ke npoint.io."""
-    print("Menyimpan data ke npoint.io...")
+def saveData(retries=3, delay=1.5):
+  """Prosedur untuk menyimpan data ke npoint.io."""
+  print("Menyimpan data ke npoint.io...")
+  for attempt in range(1, retries + 1):
     try:
-        response = requests.put(bin_url, json=app_data, timeout=10)
-        response.raise_for_status()
-        print("Data berhasil disimpan.")
+      response = requests.put(bin_url, json=app_data, timeout=10)
+      if response.status_code >= 500:
+        raise requests.exceptions.HTTPError(
+            f"{response.status_code} Server Error: {response.text}",
+            response=response,
+        )
+      response.raise_for_status()
+      print("Data berhasil disimpan.")
+      return
     except requests.exceptions.RequestException as e:
-        print(f"Gagal menyimpan data: {e}")
+      print(f"Percobaan {attempt}/{retries} gagal: {e}")
+      if attempt < retries:
+        time.sleep(delay)
+      else:
+        print("Gagal menyimpan data setelah beberapa percobaan.")
         raise
 
 
