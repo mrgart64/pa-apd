@@ -261,7 +261,7 @@ def userBuatPengajuan():
     
     if pengajuan.get(session['nip']):
         if pengajuan.get(session['nip'])['status'] == 'menunggu persetujuan':
-            print('Anda telah mengirim pengajuan penggunaan lahan dan petugas akan memverifikasi lebih lanjut\ndalam waktu beberapa minggu sampai beberapa bulan sesuai regulasi dan birokrasi\nmasing-masing wilayah regional.')
+            print('Anda telah mengirim pengajuan penggunaan lahan dan petugas akan memverifikasi lebih lanjut\ndalam waktu beberapa minggu sampai beberapa bulan sesuai regulasi dan birokrasi\nwilayah Kalimantan Timur.')
             return
     
     print('=== Form Pengajuan Penggunaan Lahan ===')
@@ -291,7 +291,7 @@ def userLihatStatus():
     cara_pakai = data_pengajuan.get('cara_pakai', '-')
     
     print('=== STATUS PENGAJUAN PENGGUNAAN LAHAN ===')
-    print('Proses verifikasi mungkin memakan waktu beberapa minggu sampai\nbeberapa bulan bergantung pada regulasi dan birokrasi masing-masing wilayah regional.')
+    print('Proses verifikasi mungkin memakan waktu beberapa minggu sampai\nbeberapa bulan bergantung pada regulasi dan birokrasi wilayah Kalimantan Timur.')
     print('[!] Cek secara berkala status pengajuan di aplikasi ini.\n')
     print(f'Status pengajuan : {data_pengajuan["status"]}')
     print(f'Mau dipakai apa  : {mau_dipakai_apa}')
@@ -349,7 +349,7 @@ Prosedur menu pengguna biasa
 '''
 def userMenu():
     print('=== User Menu ===')
-    print('PERHATIAN: Proses verifikasi mungkin memakan waktu beberapa minggu sampai\nbeberapa bulan bergantung pada regulasi dan birokrasi masing-masing wilayah regional.\nDatangi kantor pengelolaan lahan secara offline untuk verifikasi dan klarifikasi lebih lanjut jika akun Anda terblokir.')
+    print('PERHATIAN: Proses verifikasi mungkin memakan waktu beberapa minggu sampai\nbeberapa bulan bergantung pada regulasi dan birokrasi wilayah Kalimantan Timur.\nDatangi kantor pengelolaan lahan secara offline untuk verifikasi dan klarifikasi lebih lanjut jika akun Anda terblokir.')
     print('[1] Buat pengajuan   | CREATE')
     print('[2] Lihat status     | READ')
     print('[3] Keluar')
