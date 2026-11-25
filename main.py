@@ -17,6 +17,7 @@ Login penerima:
 '''
 import os
 import json
+import time
 from prettytable import PrettyTable
 from utils import validasiMenu, validasiAngka
 import requests
@@ -38,26 +39,26 @@ def loadData():
 
 
 def saveData(retries=3, delay=1.5):
-  """Prosedur untuk menyimpan data ke npoint.io."""
-  print("Menyimpan data ke npoint.io...")
-  for attempt in range(1, retries + 1):
-    try:
-      response = requests.put(bin_url, json=app_data, timeout=10)
-      if response.status_code >= 500:
-        raise requests.exceptions.HTTPError(
-            f"{response.status_code} Server Error: {response.text}",
-            response=response,
-        )
-      response.raise_for_status()
-      print("Data berhasil disimpan.")
-      return
-    except requests.exceptions.RequestException as e:
-      print(f"Percobaan {attempt}/{retries} gagal: {e}")
-      if attempt < retries:
-        time.sleep(delay)
-      else:
-        print("Gagal menyimpan data setelah beberapa percobaan.")
-        raise
+    """Prosedur untuk menyimpan data ke npoint.io."""
+    print("Menyimpan data ke npoint.io...")
+    for attempt in range(1, retries + 1):
+        try:
+            response = requests.put(bin_url, json=app_data, timeout=10)
+            if response.status_code >= 500:
+                raise requests.exceptions.HTTPError(
+                    f"{response.status_code} Server Error: {response.text}",
+                    response=response,
+                )
+            response.raise_for_status()
+            print("Data berhasil disimpan.")
+            return
+        except requests.exceptions.RequestException as e:
+            print(f"Percobaan {attempt}/{retries} gagal: {e}")
+            if attempt < retries:
+                time.sleep(delay)
+            else:
+                print("Gagal menyimpan data setelah beberapa percobaan.")
+                raise
 
 
 app_data = loadData()
@@ -65,6 +66,16 @@ app_data = loadData()
 penerima = app_data['tables']['penerima']
 pengajuan = app_data['tables']['pengajuan']
 blacklist = app_data['tables']['blacklist']
+
+
+def reloadData():
+    """Memuat ulang data terbaru dari server dan menyinkronkan variabel tabel."""
+    global app_data, penerima, pengajuan, blacklist
+    app_data = loadData()
+    penerima = app_data['tables']['penerima']
+    pengajuan = app_data['tables']['pengajuan']
+    blacklist = app_data['tables']['blacklist']
+
 
 session = {}
 is_admin = False
@@ -349,6 +360,7 @@ def userLihatStatus():
 Prosedur menu admin
 '''
 def adminMenu():
+    reloadData()
     print('=== Admin Menu ===')
     print('[1] Tambah pemohon       | CREATE')
     print('[2] Lihat pemohon        | READ')
@@ -380,6 +392,7 @@ def adminMenu():
 Prosedur menu pengguna biasa
 '''
 def userMenu():
+    reloadData()
     print('=== User Menu ===')
     print('PERHATIAN: Proses verifikasi mungkin memakan waktu beberapa minggu sampai\nbeberapa bulan bergantung pada regulasi dan birokrasi wilayah Kalimantan Timur.\nDatangi kantor pengelolaan lahan secara offline untuk verifikasi dan klarifikasi lebih lanjut jika akun Anda terblokir.')
     print('[1] Buat pengajuan   | CREATE')
