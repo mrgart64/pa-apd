@@ -72,13 +72,6 @@ def clearScreen():
 clearScreen()
 
 '''
-Prosedur untuk menyimpan data
-'''
-def saveData():
-    with open('data.json', 'w', encoding='utf-8') as f:
-        json.dump(app_data, f, indent=4)
-
-'''
 Fungsi tanpa parameter untuk login
 '''
 def login():

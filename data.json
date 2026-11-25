@@ -1,6 +1,18 @@
 {
     "tables": {
         "penerima": {
+            "001": {
+                "nip": "001",
+                "nama": "test",
+                "alamat": "Jl. Test",
+                "password": "test"
+            },
+            "012": {
+                "nip": "012",
+                "nama": "Bebek Goreng Haji Slamet",
+                "alamat": "Jl. Slamet Riyadi",
+                "password": "012"
+            },
             "067": {
                 "nip": "067",
                 "nama": "Asep Asep",
@@ -8,14 +20,14 @@
                 "password": "asepasep123"
             },
             "068": {
-                "nama": "Supri",
                 "nip": "068",
+                "nama": "Supri",
                 "alamat": "Jl. Nusyrwan Ismail No. 68",
                 "password": "testing67"
             },
             "069": {
-                "nama": "Rusdi",
                 "nip": "069",
+                "nama": "Rusdi",
                 "alamat": "Jl. Nusyrwan Ismail No. 69",
                 "password": "barbershop66"
             },
@@ -31,18 +43,6 @@
                 "alamat": "Jl. Wkwkland No. 56",
                 "password": "hydrant"
             },
-            "001": {
-                "nip": "001",
-                "nama": "test",
-                "alamat": "Jl. Test",
-                "password": "test"
-            },
-            "012": {
-                "nip": "012",
-                "nama": "Bebek Goreng Haji Slamet",
-                "alamat": "Jl. Slamet Riyadi",
-                "password": "012"
-            },
             "666": {
                 "nip": "666",
                 "nama": "Perrel",
@@ -54,27 +54,44 @@
                 "nama": "Rusdi Anjay",
                 "alamat": "Jl. Ngawi Selatan",
                 "password": "asdf"
+            },
+            "099": {
+                "nip": "099",
+                "nama": "Toni99 Kapolres Jakarta Timur",
+                "alamat": "Jl. Ngawi Timur No. 69",
+                "password": "polres"
+            }
+        },
+        "blacklist": {
+            "070": {
+                "desc": "Terdeteksi potensi penyalahgunaan dana sembako yang tidak sesuai dengan kebijakan program, akun diblokir untuk pencegahan penyalahgunaan. Silakan datangi kantor kami untuk melakukan verifikasi dan klarifikasi lebih lanjut untuk mempertanggungjawabkan deskripsi pengajuan yang Anda buat. Pastikan ada membawa semua dokumen secara lengkap, Anda dapat mengajukan kembali jika Anda dapat mempertanggungjawabkan semuanya di kantor kami."
+            },
+            "306": {
+                "desc": "Air 1 ton buat apa??"
+            },
+            "0097": {
+                "desc": "ga boleh bakar hutan"
             }
         },
         "pengajuan": {
-            "068": {
-                "desc": "Mau dapat MBG",
-                "status": "disetujui"
-            },
-            "306": {
-                "desc": "Butuh air 1000 kilogram",
-                "status": "ditolak"
-            },
-            "070": {
-                "desc": "Saya ingin mendapatkan pencairan dana sembako agar saya bisa berinvestasi melalui crypto dan NFT, saya butuh modal agar bisa berkembang",
-                "status": "ditolak"
-            },
             "001": {
                 "desc": "testing",
                 "status": "disetujui"
             },
             "067": {
                 "desc": "asep",
+                "status": "ditolak"
+            },
+            "068": {
+                "desc": "Mau dapat MBG",
+                "status": "disetujui"
+            },
+            "070": {
+                "desc": "Saya ingin mendapatkan pencairan dana sembako agar saya bisa berinvestasi melalui crypto dan NFT, saya butuh modal agar bisa berkembang",
+                "status": "ditolak"
+            },
+            "306": {
+                "desc": "Butuh air 1000 kilogram",
                 "status": "ditolak"
             },
             "666": {
@@ -84,17 +101,6 @@
             "0097": {
                 "desc": "mau bakar lahan",
                 "status": "ditolak"
-            }
-        },
-        "blacklist": {
-            "306": {
-                "desc": "Air 1 ton buat apa??"
-            },
-            "070": {
-                "desc": "Terdeteksi potensi penyalahgunaan dana sembako yang tidak sesuai dengan kebijakan program, akun diblokir untuk pencegahan penyalahgunaan. Silakan datangi kantor kami untuk melakukan verifikasi dan klarifikasi lebih lanjut untuk mempertanggungjawabkan deskripsi pengajuan yang Anda buat. Pastikan ada membawa semua dokumen secara lengkap, Anda dapat mengajukan kembali jika Anda dapat mempertanggungjawabkan semuanya di kantor kami."
-            },
-            "0097": {
-                "desc": "ga boleh bakar hutan"
             }
         }
     }
