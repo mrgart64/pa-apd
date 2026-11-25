@@ -162,7 +162,7 @@ def adminUbahStatus():
     print(f'Alamat               : {selected["alamat"]}')
     print(f'Status pengajuan     : {selected["status"]}')
     print(f'Mau dipakai apa      : {selected["mau_dipakai_apa"]}')
-    print(f'Cara pakai lahan      : {selected["cara_pakai"]}')
+    print(f'Cara pakai lahan     : {selected["cara_pakai"]}')
     
     print('\n=== Menu ===')
     print('[1] Setujui')
