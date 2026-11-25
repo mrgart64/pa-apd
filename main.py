@@ -107,7 +107,7 @@ def adminLihatPenerima():
     
     j = 1
     for i in penerima.values():
-        table.add_row([j, i['NIP'], i['nama'], i['alamat']])
+        table.add_row([j, i['nip'], i['nama'], i['alamat']])
         j += 1
         
     print(table)
