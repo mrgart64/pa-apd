@@ -156,6 +156,7 @@ Prosedur adminLihatUser() menggunakan PrettyTable
 '''
 def adminLihatUser():
     global penerima, blacklist
+    reloadData()
     tampilJudul('DAFTAR PEMOHON LAHAN')
     
     table = PrettyTable()
@@ -175,6 +176,7 @@ Prosedur adminUbahStatus() menggunakan PrettyTable
 '''
 def adminUbahStatus():
     global penerima, pengajuan, blacklist
+    reloadData()
     tampilJudul('UBAH STATUS PENGAJUAN LAHAN')
     print('Pilih pengajuan yang akan diubah statusnya')
     
@@ -284,6 +286,7 @@ Prosedur adminUbahUser() dengan 1 global variable dan beberapa local variables
 '''
 def adminUbahUser():
     global penerima
+    reloadData()
     hasil = getNewData()
     if hasil is None:
         return
@@ -311,6 +314,7 @@ Prosedur adminHapusUser() menggunakan PrettyTable
 '''
 def adminHapusUser():
     global penerima, blacklist, pengajuan
+    reloadData()
     tampilJudul('HAPUS PEMOHON')
     
     table = PrettyTable()
@@ -428,6 +432,7 @@ Prosedur userLihatStatus() dengan 2 global variables dan beberapa local variable
 '''
 def userLihatStatus():
     global pengajuan, blacklist
+    reloadData()
     data_pengajuan = pengajuan.get(session['nip'])
     if not data_pengajuan:
         print('Anda belum membuat pengajuan penggunaan lahan.')
