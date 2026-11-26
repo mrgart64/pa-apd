@@ -228,7 +228,10 @@ def adminUbahStatus():
     print()
     tampilMenu('AKSI', [('Setujui', ''), ('Tolak', ''), ('Blokir', ''), ('Batal', '')])
     
-    select_menu = int(input('Pilih menu : '))
+    select_menu = input('Pilih menu : ')
+    if not validasiMenu(select_menu, 4):
+        return
+    select_menu = int(select_menu)
     reloadData() # untuk mencegah data tertimpa karena race condition saat 2 program menulis data secara bersamaan 
     
     if select_menu == 1:
@@ -281,6 +284,10 @@ Prosedur adminUbahPenerima() dengan 1 global variable dan beberapa local variabl
 '''
 def adminUbahPenerima():
     global penerima
+    hasil = getNewData()
+    if hasil is None:
+        return
+    (index, nama, alamat) = hasil
     (index, nama, alamat) = getNewData()
     reloadData() # untuk mencegah data tertimpa karena race condition saat 2 program menulis data secara bersamaan 
     keys = list(penerima.keys())
