@@ -287,13 +287,24 @@ def adminUbahPenerima():
     hasil = getNewData()
     if hasil is None:
         return
-    (index, nama, alamat) = hasil
-    (index, nama, alamat) = getNewData()
-    reloadData() # untuk mencegah data tertimpa karena race condition saat 2 program menulis data secara bersamaan 
+
+    index, nama, alamat = hasil
+    reloadData()  # untuk mencegah data tertimpa karena race condition saat 2 program menulis data secara bersamaan
     keys = list(penerima.keys())
-    penerima[keys[index]] = {'nip': keys[index], 'nama': nama, 'alamat': alamat, 'password': penerima[keys[index]]['password']}
+
+    if index < 0 or index >= len(keys):
+        print(f'{warning_icon} Data pemohon tidak ditemukan setelah memuat ulang data.')
+        return
+
+    nip_target = keys[index]
+    penerima[nip_target] = {
+        'nip': nip_target,
+        'nama': nama,
+        'alamat': alamat,
+        'password': penerima[nip_target]['password']
+    }
     saveData()
-    print('Data pemohon berhasil diubah')
+    print(f'{success_icon} Data pemohon berhasil diubah')
 
 '''
 Prosedur adminHapusPenerima() menggunakan PrettyTable
