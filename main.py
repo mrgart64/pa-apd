@@ -210,7 +210,10 @@ def adminUbahStatus():
         return
 
     print(table)
-    selected = pengajuan_menu[int(input('Pilih nomor pengajuan yang akan diproses : '))-1]
+    pilih = input('Pilih nomor pengajuan yang akan diproses : ')
+    if not validasiMenu(pilih, len(pengajuan_menu)):
+        return
+    selected = pengajuan_menu[int(pilih)-1]
     
     clearScreen()
     
@@ -264,7 +267,10 @@ def getNewData():
         j += 1
         
     print(table)
-    index = int(input('Pilih pemohon : '))-1
+    pilih = input('Pilih pemohon : ')
+    if not validasiMenu(pilih, len(penerima)):
+        return None
+    index = int(pilih)-1
     nama = input('Masukkan nama : ')
     alamat = input('Masukkan alamat : ')
     
@@ -298,7 +304,10 @@ def adminHapusPenerima():
         j += 1
         
     print(table)
-    index = int(input('Pilih pemohon yang akan dihapus : '))-1
+    pilih = input('Pilih pemohon yang akan dihapus : ')
+    if not validasiMenu(pilih, len(penerima)):
+        return
+    index = int(pilih)-1
     deleted = penerima.pop(list(penerima.keys())[index])
     if blacklist.get(deleted['nip']):
         blacklist.pop(deleted['nip'])
