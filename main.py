@@ -101,7 +101,7 @@ def login():
     global is_admin, is_login, penerima, session
     tampilJudul('SISTEM PENCATATAN USAHA PENGGUNAAN LAHAN')
     print('Silakan login untuk melanjutkan\n')
-    username = input('Masukkan username Anda : ')
+    username = input('Masukkan username Anda (NIP) : ')
     password = input('Masukkan password Anda : ')
     if username == 'admin':
         if password == 'Admin#1234':
