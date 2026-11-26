@@ -129,9 +129,9 @@ def login():
         return False
 
 '''
-Prosedur adminTambahPenerima() dengan 1 global variable dan 4 local variables
+Prosedur adminTambahUser() dengan 1 global variable dan 4 local variables
 '''
-def adminTambahPenerima():
+def adminTambahUser():
     global penerima
     tampilJudul('TAMBAH PEMOHON / PENGELOLA LAHAN')
     nama = input('Masukkan nama : ')
@@ -149,12 +149,12 @@ def adminTambahPenerima():
     print(f'{success_icon} Data pemohon berhasil dibuat')
     
 '''
-Prosedur adminLihatPenerima() menggunakan PrettyTable
+Prosedur adminLihatUser() menggunakan PrettyTable
 '''
 '''
-Prosedur adminLihatPenerima() menggunakan PrettyTable
+Prosedur adminLihatUser() menggunakan PrettyTable
 '''
-def adminLihatPenerima():
+def adminLihatUser():
     global penerima, blacklist
     tampilJudul('DAFTAR PEMOHON LAHAN')
     
@@ -280,9 +280,9 @@ def getNewData():
     return (index, nama, alamat)
 
 '''
-Prosedur adminUbahPenerima() dengan 1 global variable dan beberapa local variables
+Prosedur adminUbahUser() dengan 1 global variable dan beberapa local variables
 '''
-def adminUbahPenerima():
+def adminUbahUser():
     global penerima
     hasil = getNewData()
     if hasil is None:
@@ -307,9 +307,9 @@ def adminUbahPenerima():
     print(f'{success_icon} Data pemohon berhasil diubah')
 
 '''
-Prosedur adminHapusPenerima() menggunakan PrettyTable
+Prosedur adminHapusUser() menggunakan PrettyTable
 '''
-def adminHapusPenerima():
+def adminHapusUser():
     global penerima, blacklist, pengajuan
     tampilJudul('HAPUS PEMOHON')
     
@@ -486,15 +486,15 @@ def adminMenu():
     menu = int(menu)
 
     if menu == 1:
-        adminTambahPenerima()
+        adminTambahUser()
     elif menu == 2:
-        adminLihatPenerima()
+        adminLihatUser()
     elif menu == 3:
         adminUbahStatus()
     elif menu == 4:
-        adminUbahPenerima()
+        adminUbahUser()
     elif menu == 5:
-        adminHapusPenerima()
+        adminHapusUser()
     elif menu == 6:
         adminLihatStatistik()
     elif menu == 7:
