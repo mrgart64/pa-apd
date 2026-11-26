@@ -50,3 +50,28 @@ def validasiAngka (num):
         return False
 
     return True
+
+'''
+Fungsi untuk menampilkan judul dalam kotak agar tampilan lebih rapi
+'''
+def tampilJudul (teks, lebar = 60):
+    print ('+' + '-' * (lebar - 2) + '+')
+    print ('|' + teks.center (lebar - 2) + '|')
+    print ('+' + '-' * (lebar - 2) + '+')
+
+'''
+Fungsi untuk menampilkan daftar menu bernomor
+daftar berisi pasangan (nama menu, keterangan)
+'''
+def tampilMenu (judul, daftar, lebar = 60):
+    tampilJudul (judul, lebar)
+    for no, (nama, ket) in enumerate (daftar, 1):
+        print (f'  [{no}] {nama:<28}{ket}')
+    print ('-' * lebar)
+
+'''
+Fungsi untuk membuat diagram batang sederhana di terminal
+'''
+def batangTeks (label, jumlah, maks, panjang = 30):
+    isi = int (jumlah / maks * panjang) if maks > 0 else 0
+    return f'  {label:<10} {"█" * isi:<{panjang}} {jumlah}'

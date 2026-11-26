@@ -19,7 +19,7 @@ import os
 import json
 import time
 from prettytable import PrettyTable
-from utils import validasiMenu, validasiAngka
+from utils import validasiMenu, validasiAngka, tampilJudul, tampilMenu, batangTeks
 import requests
 import matplotlib.pyplot as plt
 
@@ -99,7 +99,8 @@ Fungsi tanpa parameter untuk login
 '''
 def login():
     global is_admin, is_login, penerima, session
-    print('Selamat datang di aplikasi Sistem Pencatatan Usaha Penggunaan Lahan')
+    tampilJudul('SISTEM PENCATATAN USAHA PENGGUNAAN LAHAN')
+    print('Silakan login untuk melanjutkan\n')
     username = input('Masukkan username Anda : ')
     password = input('Masukkan password Anda : ')
     if username == 'admin':
@@ -132,7 +133,7 @@ Prosedur adminTambahPenerima() dengan 1 global variable dan 4 local variables
 '''
 def adminTambahPenerima():
     global penerima
-    print('=== Tambah Pemohon / Pengelola Lahan ===')
+    tampilJudul('TAMBAH PEMOHON / PENGELOLA LAHAN')
     nama = input('Masukkan nama : ')
     nip = input('Masukkan nip : ')
     if not validasiAngka(nip):
@@ -154,7 +155,7 @@ Prosedur adminLihatPenerima() menggunakan PrettyTable
 '''
 def adminLihatPenerima():
     global penerima, blacklist
-    print('=== Lihat Semua Pemohon Lahan ===')
+    tampilJudul('DAFTAR PEMOHON LAHAN')
     
     table = PrettyTable()
     table.field_names = ["No", "NIP", "Nama", "Alamat", "Status Akun"]
@@ -173,7 +174,7 @@ Prosedur adminUbahStatus() menggunakan PrettyTable
 '''
 def adminUbahStatus():
     global penerima, pengajuan, blacklist
-    print('=== Ubah Status Pengajuan Penggunaan Lahan ===')
+    tampilJudul('UBAH STATUS PENGAJUAN LAHAN')
     print('Pilih pengajuan yang akan diubah statusnya')
     
     table = PrettyTable()
@@ -212,7 +213,7 @@ def adminUbahStatus():
     
     clearScreen()
     
-    print('=== Informasi Pengajuan Lahan ===')
+    tampilJudul('INFORMASI PENGAJUAN LAHAN')
     print(f'NIP                  : {selected["nip"]}')
     print(f'Nama                 : {selected["nama"]}')
     print(f'Alamat               : {selected["alamat"]}')
@@ -220,11 +221,8 @@ def adminUbahStatus():
     print(f'Mau dipakai apa      : {selected["mau_dipakai_apa"]}')
     print(f'Cara pakai lahan     : {selected["cara_pakai"]}')
     
-    print('\n=== Menu ===')
-    print('[1] Setujui')
-    print('[2] Tolak')
-    print('[3] Blokir')
-    print('[4] Keluar')
+    print()
+    tampilMenu('AKSI', [('Setujui', ''), ('Tolak', ''), ('Blokir', ''), ('Batal', '')])
     
     select_menu = int(input('Pilih menu : '))
     
@@ -233,7 +231,7 @@ def adminUbahStatus():
         saveData()
         print('Pengajuan penggunaan lahan berhasil disetujui')
     elif select_menu == 2:
-        desc = input('Masukkan alasan pemblokiran : ')
+        desc = input('Masukkan alasan penolakan : ')
         pengajuan[selected['nip']]['status'] = 'ditolak'
         pengajuan[selected['nip']]['alasan'] = desc
         saveData()
@@ -253,7 +251,7 @@ Fungsi tanpa parameter getNewData() menggunakan PrettyTable
 '''
 def getNewData():
     global penerima
-    print('=== Ubah Data Pemohon ===')
+    tampilJudul('UBAH DATA PEMOHON')
     
     table = PrettyTable()
     table.field_names = ["No", "NIP", "Nama", "Alamat"]
@@ -286,7 +284,7 @@ Prosedur adminHapusPenerima() menggunakan PrettyTable
 '''
 def adminHapusPenerima():
     global penerima, blacklist, pengajuan
-    print('=== Hapus Pemohon ===')
+    tampilJudul('HAPUS PEMOHON')
     
     table = PrettyTable()
     table.field_names = ["No", "NIP", "Nama", "Alamat"]
@@ -309,7 +307,8 @@ def adminHapusPenerima():
 def adminLihatStatistik():
     global pengajuan
     reloadData()  # Ambil data terbaru dari server sebelum membuat chart
-    print('=== Statistik Pengajuan Penggunaan Lahan ===')
+    clearScreen()
+    tampilJudul('STATISTIK PENGAJUAN PENGGUNAAN LAHAN')
 
     diterima = 0
     ditolak = 0
@@ -317,56 +316,52 @@ def adminLihatStatistik():
     daftar_pending = []
 
     for nip, data in pengajuan.items():
-        if not isinstance(data, dict):
-            pending += 1
-            daftar_pending.append((nip, 'Belum ada detail status'))
-            continue
-
-        status = str(data.get('status', '')).strip().lower()
+        status = str(data.get('status', '')).strip().lower() if isinstance(data, dict) else ''
 
         if status in ('disetujui', 'diterima'):
             diterima += 1
         elif status == 'ditolak':
             ditolak += 1
         else:
-            # Termasuk 'menunggu persetujuan', 'pending', kosong, atau belum direspon
+            # Termasuk 'menunggu persetujuan', kosong, atau belum direspon
             pending += 1
-            label_status = status if status else 'belum direspon'
-            daftar_pending.append((nip, label_status))
+            daftar_pending.append((nip, status if status else 'belum direspon'))
 
-    print(f'Diterima : {diterima}')
-    print(f'Ditolak  : {ditolak}')
-    print(f'Pending  : {pending}')
+    total = diterima + ditolak + pending
+    maks = max(diterima, ditolak, pending)
+
+    # Ringkasan dan bar chart di terminal
+    print(f'Total pengajuan : {total}\n')
+    print(batangTeks('Diterima', diterima, maks))
+    print(batangTeks('Ditolak', ditolak, maks))
+    print(batangTeks('Pending', pending, maks))
 
     if daftar_pending:
-        print('\nDaftar pengajuan masuk kategori Pending:')
+        table = PrettyTable()
+        table.field_names = ["NIP", "Nama", "Status"]
         for nip, st in daftar_pending:
-            nama_pemohon = penerima.get(nip, {}).get('nama', '-')
-            print(f'  - NIP {nip} ({nama_pemohon}) -> status: {st}')
+            table.add_row([nip, penerima.get(nip, {}).get('nama', '-'), st])
+        print('\nPengajuan yang masih pending:')
+        print(table)
 
+    # Bar chart matplotlib
     kategori = ['Diterima', 'Ditolak', 'Pending']
     jumlah = [diterima, ditolak, pending]
-    warna = ['green', 'red', 'gold']  # hijau, merah, kuning
+    warna = ['green', 'red', 'gold']
 
     plt.figure(figsize=(7, 5))
     bars = plt.bar(kategori, jumlah, color=warna, edgecolor='black', width=0.55)
 
     for bar in bars:
         tinggi = bar.get_height()
-        plt.text(
-            bar.get_x() + bar.get_width() / 2,
-            tinggi + 0.15,
-            str(int(tinggi)),
-            ha='center',
-            va='bottom',
-            fontsize=10,
-            fontweight='bold'
-        )
+        plt.text(bar.get_x() + bar.get_width() / 2, tinggi + 0.1,
+                 str(int(tinggi)), ha='center', va='bottom', fontweight='bold')
 
-    plt.title('Statistik Status Pengajuan Penggunaan Lahan', fontsize=13, fontweight='bold')
-    plt.xlabel('Status Pengajuan', fontsize=11)
-    plt.ylabel('Jumlah Pengajuan', fontsize=11)
-    plt.ylim(0, max(jumlah + [1]) + 1)
+    plt.title('Statistik Status Pengajuan Penggunaan Lahan')
+    plt.xlabel('Status Pengajuan')
+    plt.ylabel('Jumlah Pengajuan')
+    plt.ylim(0, maks + 1)
+    plt.yticks(range(0, maks + 2))
     plt.grid(axis='y', linestyle='--', alpha=0.5)
     plt.tight_layout()
     plt.show()
@@ -385,7 +380,7 @@ def userBuatPengajuan():
             print('Anda telah mengirim pengajuan penggunaan lahan dan petugas akan memverifikasi lebih lanjut\ndalam waktu beberapa minggu sampai beberapa bulan sesuai regulasi dan birokrasi\nwilayah Kalimantan Timur.')
             return
     
-    print('=== Form Pengajuan Penggunaan Lahan ===')
+    tampilJudul('FORM PENGAJUAN PENGGUNAAN LAHAN')
     mau_dipakai_apa = input('Lahan mau dipakai untuk usaha apa? : ')
     cara_pakai = input('Bagaimana cara pakai / metode pengelolaan lahannya? : ')
     pengajuan[session['nip']] = {
@@ -411,7 +406,7 @@ def userLihatStatus():
     mau_dipakai_apa = data_pengajuan.get('mau_dipakai_apa', data_pengajuan.get('desc', '-'))
     cara_pakai = data_pengajuan.get('cara_pakai', '-')
     
-    print('=== STATUS PENGAJUAN PENGGUNAAN LAHAN ===')
+    tampilJudul('STATUS PENGAJUAN PENGGUNAAN LAHAN')
     print('Proses verifikasi mungkin memakan waktu beberapa minggu sampai\nbeberapa bulan bergantung pada regulasi dan birokrasi wilayah Kalimantan Timur.')
     print('[!] Cek secara berkala status pengajuan di aplikasi ini.\n')
     print(f'Status pengajuan : {data_pengajuan["status"]}')
@@ -443,14 +438,15 @@ Prosedur menu admin
 '''
 def adminMenu():
     global is_login
-    print('=== Admin Menu ===')
-    print('[1] Tambah pemohon       | CREATE')
-    print('[2] Lihat pemohon        | READ')
-    print('[3] Setujui pengajuan    | UPDATE')
-    print('[4] Ubah data pemohon    | UPDATE')
-    print('[5] Hapus pemohon        | DELETE')
-    print('[6] Lihat statistik      | CHART')
-    print('[7] Keluar')
+    tampilMenu('MENU ADMIN', [
+        ('Tambah pemohon', 'CREATE'),
+        ('Lihat pemohon', 'READ'),
+        ('Proses pengajuan', 'UPDATE'),
+        ('Ubah data pemohon', 'UPDATE'),
+        ('Hapus pemohon', 'DELETE'),
+        ('Lihat statistik', 'CHART'),
+        ('Keluar', ''),
+    ])
     menu = input('Pilih menu : ')
     clearScreen()
     if not validasiMenu(menu, 7):
@@ -479,12 +475,15 @@ Prosedur menu pengguna biasa
 def userMenu():
     global is_login
     reloadData()
-    print('=== User Menu ===')
-    print('PERHATIAN: Proses verifikasi mungkin memakan waktu beberapa minggu sampai\nbeberapa bulan bergantung pada regulasi dan birokrasi wilayah Kalimantan Timur.\nDatangi kantor pengelolaan lahan secara offline untuk verifikasi dan klarifikasi lebih lanjut jika akun Anda terblokir.')
-    print('[1] Buat pengajuan   | CREATE')
-    print('[2] Lihat status     | READ')
-    print('[3] Keluar')
-    menu = input('Pilih menu : Pilihlah menu di atas: ')
+    print(f'Halo, {session["nama"]}')
+    print('Verifikasi pengajuan bisa memakan waktu beberapa minggu sampai bulan.')
+    print('Jika akun terblokir, datangi kantor pengelolaan lahan.\n')
+    tampilMenu('MENU PEMOHON', [
+        ('Buat pengajuan', 'CREATE'),
+        ('Lihat status', 'READ'),
+        ('Keluar', ''),
+    ])
+    menu = input('Pilih menu : ')
     clearScreen()
     if not validasiMenu(menu, 3):
         return
@@ -505,8 +504,8 @@ def mainMenu():
     global is_login
     while is_login:
         clearScreen()
-        print('Sistem Pencatatan Usaha Penggunaan Lahan')
-        print('"Pencatatan tertib, pemanfaatan lahan tepat guna dan berkelanjutan"')
+        tampilJudul('SISTEM PENCATATAN USAHA PENGGUNAAN LAHAN')
+        print('"Pencatatan tertib, pemanfaatan lahan tepat guna dan berkelanjutan"\n')
         if is_admin:
             adminMenu()
         else:
