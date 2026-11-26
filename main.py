@@ -143,6 +143,7 @@ def adminTambahPenerima():
         return
     alamat = input('Masukkan alamat : ')
     password = input('Masukkan password : ')
+    reloadData() # untuk mencegah data tertimpa karena race condition saat 2 program menulis data secara bersamaan 
     penerima[nip] = {'nip': nip, 'nama': nama, 'alamat': alamat, 'password': password}
     saveData()
     print(f'{success_icon} Data pemohon berhasil dibuat')
@@ -225,6 +226,7 @@ def adminUbahStatus():
     tampilMenu('AKSI', [('Setujui', ''), ('Tolak', ''), ('Blokir', ''), ('Batal', '')])
     
     select_menu = int(input('Pilih menu : '))
+    reloadData() # untuk mencegah data tertimpa karena race condition saat 2 program menulis data secara bersamaan 
     
     if select_menu == 1:
         pengajuan[selected['nip']]['status'] = 'disetujui'
@@ -274,6 +276,7 @@ Prosedur adminUbahPenerima() dengan 1 global variable dan beberapa local variabl
 def adminUbahPenerima():
     global penerima
     (index, nama, alamat) = getNewData()
+    reloadData() # untuk mencegah data tertimpa karena race condition saat 2 program menulis data secara bersamaan 
     keys = list(penerima.keys())
     penerima[keys[index]] = {'nip': keys[index], 'nama': nama, 'alamat': alamat, 'password': penerima[keys[index]]['password']}
     saveData()
@@ -383,6 +386,7 @@ def userBuatPengajuan():
     tampilJudul('FORM PENGAJUAN PENGGUNAAN LAHAN')
     mau_dipakai_apa = input('Lahan mau dipakai untuk usaha apa? : ')
     cara_pakai = input('Bagaimana cara pakai / metode pengelolaan lahannya? : ')
+    reloadData() # untuk mencegah data tertimpa karena race condition saat 2 program menulis data secara bersamaan 
     pengajuan[session['nip']] = {
         'mau_dipakai_apa': mau_dipakai_apa,
         'cara_pakai': cara_pakai,
